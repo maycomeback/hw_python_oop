@@ -1,24 +1,23 @@
-class InfoMessage:
-    """Информационное сообщение о тренировке."""
-    def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float):
-        self.training_type = training_type
-        self.duration = duration
-        self.speed = speed
-        self.distance = distance
-        self.calories = calories
+from dataclasses import dataclass, asdict
+from typing import ClassVar, Type
 
-    def get_message(self):
-        return (
-            f'Тип тренировки: {self.training_type}; '
-            f'Длительность: {self.duration:.3f} ч.; '
-            f'Дистанция: {self.distance:.3f} км; '
-            f'Ср. скорость: {self.speed:.3f} км/ч; '
-            f'Потрачено ккал: {self.calories:.3f}.')
+
+@dataclass
+class InfoMessage:
+    training_type: str
+    duration: float
+    distance: float
+    speed: float
+    calories: float
+
+    MESSAGE: ClassVar[str] = ('Тип тренировки: {training_type}; '
+                              'Длительность: {duration:0.3f} ч.; '
+                              'Дистанция: {distance:0.3f} км; '
+                              'Ср. скорость: {speed:0.3f} км/ч; '
+                              'Потрачено ккал: {calories:0.3f}.')
+
+    def get_message(self) -> str:
+        return self.MESSAGE.format(**asdict(self))
 
 
 class Training:
@@ -46,7 +45,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        pass
+        raise NotImplementedError
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -73,8 +72,8 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    FORMULA: float = 0.035
-    FORMULA_2: float = 0.029
+    WEIGHT_MULTIPLAYER: float = 0.035
+    CALORIES_MULTIPLAYER: float = 0.029
     KM_H_IN_M_S: float = 0.278
     SM_IN_M: int = 100
 
@@ -90,9 +89,9 @@ class SportsWalking(Training):
     def get_spent_calories(self) -> float:
         speed_ed = self.get_mean_speed() * self.KM_H_IN_M_S
         height_m = self.height / self.SM_IN_M
-        return ((self.FORMULA * self.weight
+        return ((self.WEIGHT_MULTIPLAYER * self.weight
                  + (speed_ed ** 2 / height_m
-                    ) * self.FORMULA_2 * self.weight
+                    ) * self.CALORIES_MULTIPLAYER * self.weight
                  ) * self.duration * self.MINUTES_IN_HOUR)
 
 
@@ -126,7 +125,7 @@ def read_package(workout_type: str,
                  ) -> Training:
     """Прочитать данные полученные от датчиков."""
 
-    training_types = {
+    training_types: dict[str, Type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
@@ -134,6 +133,7 @@ def read_package(workout_type: str,
 
     if training_type := training_types.get(workout_type):
         return training_type(*data)
+    raise ValueError('Неизвестный тип ренировки')
 
 
 def main(training: Training) -> None:
