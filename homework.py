@@ -71,8 +71,8 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    WEIGHT_MULTIPLAYER: float = 0.035
-    CALORIES_MULTIPLAYER: float = 0.029
+    WEIGHT_MEAN_MULTIPLAYER: float = 0.035
+    CALORIES_MEAN_MULTIPLAYER: float = 0.029
     KM_H_IN_M_S: float = 0.278
     SM_IN_M: int = 100
 
@@ -88,9 +88,9 @@ class SportsWalking(Training):
     def get_spent_calories(self) -> float:
         speed_ed = self.get_mean_speed() * self.KM_H_IN_M_S
         height_m = self.height / self.SM_IN_M
-        return ((self.WEIGHT_MULTIPLAYER * self.weight
+        return ((self.WEIGHT_MEAN_MULTIPLAYER * self.weight
                  + (speed_ed ** 2 / height_m
-                    ) * self.CALORIES_MULTIPLAYER * self.weight
+                    ) * self.CALORIES_MEAN_MULTIPLAYER * self.weight
                  ) * self.duration * self.MINUTES_IN_HOUR)
 
 
