@@ -97,8 +97,8 @@ class SportsWalking(Training):
 class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP: float = 1.38
-    SWIM_FORMULA: float = 1.1
-    SWIM_FORMULA_2: int = 2
+    SWIM_MEAN_FORMULA: float = 1.1
+    SWIM_MEAN_MULTIPLAYER: int = 2
 
     def __init__(self,
                  action: int,
@@ -115,8 +115,8 @@ class Swimming(Training):
         return distance / self.M_IN_KM / self.duration
 
     def get_spent_calories(self) -> float:
-        multiplayer = self.SWIM_FORMULA_2 * self.weight * self.duration
-        return (self.get_mean_speed() + self.SWIM_FORMULA) * multiplayer
+        multiplayer = self.SWIM_MEAN_MULTIPLAYER * self.weight * self.duration
+        return (self.get_mean_speed() + self.SWIM_MEAN_FORMULA) * multiplayer
 
 
 def read_package(workout_type: str,
